@@ -1,10 +1,20 @@
-import React, {Component} from 'react'
+import React, {Component} from 'react';
+import {connect} from 'react-redux';
 import CardList from '../Components/CardList';
 import SearchBox from '../Components/SearchBox';
 import Scroll from '../Components/Scroll';
 // import {robots} from "./robots";
 import './App.css';
 
+import {setSearchField} from "../actions";
+
+const mapStateToProps = state => ({
+    searchfield: state.searchRobots.searchfield
+});
+
+const mapDispatchToProps = (dispatch) => ({
+    onSearchChange: (event) => dispatch(setSearchField(event.target.value))
+});
 
 class App extends Component {
     constructor(){
@@ -17,10 +27,10 @@ class App extends Component {
     }
 
     componentDidMount() {
+        console.log(this.props.store.getState());
         fetch('https://jsonplaceholder.typicode.com/users')
             .then(response => response.json())
             .then(users => this.setState({robots: users}))
-
     }
 
     onSearchChange = (event) => {
@@ -28,7 +38,8 @@ class App extends Component {
     };
 
     render() {
-        const {robots, searchfield } = this.state;
+        const {robots } = this.state;
+        const { searchfield } = this.props;
         const filteredRobots = robots.filter(robot => {
             return robot.name.toLowerCase().includes(searchfield.toLowerCase());
         });
@@ -46,4 +57,4 @@ class App extends Component {
     }
 }
 
-export default App;
+export default connect(mapStateToProps, mapDispatchToProps)(App);
